@@ -24,16 +24,16 @@ def cityReadSACO():
 	for RK in range(len(order)):
 		plt.text(x1[RK],y1[RK],order[RK])
 	plt.show() 
-
+'''
 def cityReadElitist():
 	x,y=loadtxt('city_data_elitist.txt', unpack = True)
 	order=loadtxt('Data_elitist.txt')
 	print order
 	#print x
 	#print y
-	'''order1[]
+	order1[]
 	x1[]
-	y1[]'''
+	y1[]
 	x1=[]
 	y1=[]
 	for RK in order:
@@ -53,9 +53,9 @@ def cityReadRank():
 	print order
 	#print x
 	#print y
-	'''order1[]
+	order1[]
 	x1[]
-	y1[]'''
+	y1[]
 	x1=[]
 	y1=[]
 	for RK in order:
@@ -68,11 +68,11 @@ def cityReadRank():
 	for RK in range(len(order)):
 		plt.text(x1[RK],y1[RK],order[RK])
 	plt.show() 
-	 
+'''	 
 def main():
     cityReadSACO()
-    cityReadElitist()
-    cityReadRank()	
+   # cityReadElitist()
+   # cityReadRank()	
 
 
 if __name__=="__main__":
