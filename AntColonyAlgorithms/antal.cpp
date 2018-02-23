@@ -9,10 +9,10 @@
 //#include <cv.h>
 //#include <highgui.h>
 
-#define MAX_CITIES 6
+#define MAX_CITIES 30
 #define MAX_DIST 100
 #define MAX_TOUR (MAX_CITIES * MAX_DIST)
-#define MAX_ANTS 6
+#define MAX_ANTS 30
 
 using namespace std;
 
