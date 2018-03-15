@@ -15,6 +15,9 @@
 from operator import attrgetter
 import random, sys, time, copy
 import matplotlib.pyplot as plt
+from math import sqrt
+
+diction = {}
 
 # class that represents a graph
 class Graph:
@@ -26,12 +29,22 @@ class Graph:
 
 
 	# adds a edge linking "src" in "dest" with a "cost"
-	def addEdge(self, src, dest, cost = 0):
+	def addEdge(self):
 		# checks if the edge already exists
-		if not self.existsEdge(src, dest):
-			self.edges[(src, dest)] = cost
-			self.vertices.add(src)
-			self.vertices.add(dest)
+		'''if (src_coord not in diction.values()):
+			diction[src] = src_coord
+
+		if (dest_coord not in diction.values()):
+			diction[dest] = dest_coord
+		'''
+
+		#if not self.existsEdge(src, dest):
+		for src in diction.keys():
+			for dest in diction.keys():
+				if src!=dest:
+					self.edges[(src, dest)] = sqrt(abs(diction[src][0] - diction[dest][0])**2 + abs(diction[src][1] - diction[dest][1])**2)
+					self.vertices.add(src)
+					self.vertices.add(dest)
 
 
 	# checks if exists a edge linking "src" in "dest"
@@ -42,13 +55,15 @@ class Graph:
 	# shows all the links of the graph
 	def showGraph(self):
 		print('Showing the graph:\n')
-		plt.figure('S-ACO', (8,6), 80, 'w', 'k')	
-		plt.arrow(x1,y1, marker='x', linestyle = '--', color = 'r', label = 'S-ACO')
+		#plt.figure('S-ACO', (8,6), 80, 'w', 'k')	
+		#plt.arrow(x1,y1, marker='x', linestyle = '--', color = 'r', label = 'S-ACO')
 		for edge in self.edges:
 			print('%d linked in %d with cost %d' % (edge[0], edge[1], self.edges[edge]))
-			plt.arrow(edge[0],edge[1],self.edges[edge])
-	
-		plt.show()
+		#	plt.arrow(edge[0],edge[1],0.1,0.1)
+		#	plt.arrow(edge[0],edge[1],self.edges[edge])
+		#	plt.figure('S-ACO', (8,6), 80, 'w', 'k')	
+#			plt.plot(x1,y1, marker='x', linestyle = '--', color = 'r', label = 'S-ACO')
+#		plt.show()
 
 	# returns total cost of the path
 	def getCostPath(self, path):
@@ -68,21 +83,27 @@ class Graph:
 		random_paths, list_vertices = [], list(self.vertices)
 
 		initial_vertice = random.choice(list_vertices)
+####		print initial_vertice
 		if initial_vertice not in list_vertices:
 			print('Error: initial vertice %d not exists!' % initial_vertice)
 			sys.exit(1)
-
+####		print list_vertices
 		list_vertices.remove(initial_vertice)
+####		print list_vertices
 		list_vertices.insert(0, initial_vertice)
+####		print list_vertices
 
 		for i in range(max_size):
 			list_temp = list_vertices[1:]
+####			print 'list_temp before shuffle: %s' % list_temp
 			random.shuffle(list_temp)
+####			print 'list_temp after shuffle: %s' % list_temp
 			list_temp.insert(0, initial_vertice)
+####			print 'list_temp after inserting initial_vertice: %s' %initial_vertice
 
 			if list_temp not in random_paths:
 				random_paths.append(list_temp)
-
+####		print "random paths : %s" % random_paths		
 		return random_paths
 
 
@@ -220,7 +241,7 @@ class PSO:
 			# updates gbest (best particle of the population)
 			self.gbest = min(self.particles, key=attrgetter('cost_pbest_solution'))
 
-			# for each particle in the swarm
+			# for eacsh particle in the swarm
 			for particle in self.particles:
 
 				particle.clearVelocity() # cleans the speed of the particle
@@ -286,44 +307,32 @@ if __name__ == "__main__":
 	
 	# creates the Graph instance
 	graph = Graph(amount_vertices=5)
-
-	# This graph is in the folder "images" of the repository.
-	graph.addEdge(0, 1, 1)
-	graph.addEdge(1, 0, 1)
-	graph.addEdge(0, 2, 3)
-	graph.addEdge(2, 0, 3)
-	graph.addEdge(0, 3, 4)
-	graph.addEdge(3, 0, 4)
-	graph.addEdge(0, 4, 5)
-	graph.addEdge(4, 0, 5)
-	graph.addEdge(1, 2, 1)
-	graph.addEdge(2, 1, 1)
-	graph.addEdge(1, 3, 4)
-	graph.addEdge(3, 1, 4)
-	graph.addEdge(1, 4, 8)
-	graph.addEdge(4, 1, 8)
-	graph.addEdge(2, 3, 5)
-	graph.addEdge(3, 2, 5)
-	graph.addEdge(2, 4, 1)
-	graph.addEdge(4, 2, 1)
-	graph.addEdge(3, 4, 2)
-	graph.addEdge(4, 3, 2)
-
-	# creates a PSO instance
+	i = 0
+	with open('city_data.txt', 'r') as file:
+		for line in file.readlines():
+			l = line.split()
+			l = (int(line.split()[0]),int(line.split()[1]))
+			diction[i] = l
+			i = i + 1
+#	print diction
+	graph.addEdge()
 	pso = PSO(graph, iterations=100, size_population=10, beta=1, alfa=0.9)
 	pso.run() # runs the PSO algorithm
 	pso.showsParticles() # shows the particles
 
-	# shows the global best particle
+	x1 = []
+	y1 = []
+	for RK in pso.getGBest().getPBest():
+		x1.append(diction[RK][0])
+		y1.append(diction[RK][1])
+	x1.append(diction[0][0])
+	y1.append(diction[0][1])
+	plt.figure('PSO', (8,6), 80, 'w', 'k')	
+	plt.plot(x1,y1, marker='x', linestyle = '--', color = 'b', label = 'PSO')
+	for RK in pso.getGBest().getPBest():
+		plt.text(x1[RK],y1[RK],pso.getGBest().getPBest()[RK])
+	plt.show() 
+ 
 	print('gbest: %s | cost: %d\n' % (pso.getGBest().getPBest(), pso.getGBest().getCostPBest()))
 
-	
-	# random graph
-	print('Random graph...')
-	random_graph = CompleteGraph(amount_vertices=20)
-	random_graph.generates()
-	pso_random_graph = PSO(random_graph, iterations=10000, size_population=10, beta=1, alfa=1)
-	pso_random_graph.run()
-	print('gbest: %s | cost: %d\n' % (pso_random_graph.getGBest().getPBest(), 
-					pso_random_graph.getGBest().getCostPBest()))
-	
+#	graph.showGraph()
